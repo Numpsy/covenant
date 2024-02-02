@@ -30,6 +30,7 @@ public static class BomLicenseDetector
         { "https://github.com/dotnet/corefx/blob/master/LICENSE.TXT", "MIT" },
         { "https://opensource.org/licenses/mpl-2.0", "MPL-2.0" },
         { "https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html", "LGPL-2.1" },
+        { "https://www.adobe.com/devnet/xmp/library/eula-xmp-library-java.html", "BSD-3-Clause" },
     };
 
     private static readonly Dictionary<string, string> _hashes = new(StringComparer.OrdinalIgnoreCase)

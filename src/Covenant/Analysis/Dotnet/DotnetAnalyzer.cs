@@ -220,7 +220,7 @@ internal class DotnetAnalyzer : Analyzer
 
     private AssetFile? ReadAssetFile(AnalysisContext context, FilePath path)
     {
-        path = path.GetDirectory().CombineWithFilePath("obj/project.assets.json");
+        path = GetObjFilePath(path);
 
         var assets = _assetFileReader.ReadAssetFile(path);
         if (assets == null)
@@ -230,6 +230,35 @@ internal class DotnetAnalyzer : Analyzer
         }
 
         return assets;
+    }
+
+    private static FilePath GetObjFilePath(FilePath path)
+    {
+        var process = Process.Start(new ProcessStartInfo
+        {
+            WorkingDirectory = path.GetDirectory().FullPath,
+            FileName = "dotnet",
+            Arguments = "build --getProperty:ProjectAssetsFile",
+            CreateNoWindow = true,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+        });
+
+        if (process is not null)
+        {
+            process.WaitForExit(10000);
+
+            if (process.ExitCode == 0)
+            {
+                var output = process.StandardOutput.ReadToEnd();
+                if (!string.IsNullOrEmpty(output))
+                {
+                    return output.TrimEnd();
+                }
+            }
+        }
+
+        return path.GetDirectory().CombineWithFilePath("obj/project.assets.json");
     }
 
     private FilePath? GetNuGetPackagePath(AnalysisContext context, AssetFile assets, Library library)
