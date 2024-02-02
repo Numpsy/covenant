@@ -53,9 +53,11 @@ internal class DotnetAnalyzer : Analyzer
 
     public override bool CanHandle(AnalysisContext context, FilePath path)
     {
-        var isSolution = path.GetExtension()?.Equals(".sln", StringComparison.OrdinalIgnoreCase) ?? false;
-        var isCsProject = path.GetExtension()?.Equals(".csproj", StringComparison.OrdinalIgnoreCase) ?? false;
-        var isFsProject = path.GetExtension()?.Equals(".fsproj", StringComparison.OrdinalIgnoreCase) ?? false;
+        var extension = path.GetExtension() ?? string.Empty;
+
+        var isSolution = extension.Equals(".sln", StringComparison.OrdinalIgnoreCase) || extension.Equals(".slnf", StringComparison.OrdinalIgnoreCase);
+        var isCsProject = extension.Equals(".csproj", StringComparison.OrdinalIgnoreCase);
+        var isFsProject = extension.Equals(".fsproj", StringComparison.OrdinalIgnoreCase);
         return isSolution || isCsProject || isFsProject;
     }
 
@@ -64,7 +66,7 @@ internal class DotnetAnalyzer : Analyzer
         path = path.MakeAbsolute(_environment);
         var extension = path.GetExtension() ?? string.Empty;
 
-        if (extension.Equals(".sln", StringComparison.OrdinalIgnoreCase))
+        if (extension.Equals(".sln", StringComparison.OrdinalIgnoreCase) || extension.Equals(".slnf", StringComparison.OrdinalIgnoreCase))
         {
             // Analyze solution
             var solution = SolutionFile.Parse(path.FullPath);
